@@ -1,0 +1,55 @@
+name: SVG Timeline Diagrams
+description: Generates and commits SVG Timeline Diagrams from your data
+author: "metaory <metaory@gmail.com>"
+
+inputs:
+  input-path:
+    description: Path to input file
+    required: true
+
+  output-path:
+    description: Where to save the generated SVG
+    required: false
+    default: ./timeline.svg
+
+  commit-message:
+    description: Commit message
+    required: false
+    default: 'chore: update generated timeline diagram'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup
+      shell: bash
+      run: |
+        echo "Setting up the environment..."
+        # sudo apt install -y librsvg2-bin
+
+    - name: Generate SVG
+      shell: bash
+      run: |
+        echo "Generating SVG from ${{ inputs.input-path }}"
+        ${{ github.action_path }}/main.sh ${{ inputs.input-path }} ${{ inputs.output-path }}
+
+    - name: Commit Changes
+      shell: bash
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add "${{ inputs.output-path }}"
+        git commit -m "${{ inputs.commit-message }}" || echo "No changes to commit"
+        git push
+
+branding:
+  icon: triangle
+  # icon: trello
+  # icon: tv
+  # icon: video
+  # icon: image
+  # icon: wind
+  # icon: zap
+
+  color: purple
+  # white, yellow, blue, green, orange, red, purple, gray-dark
+
